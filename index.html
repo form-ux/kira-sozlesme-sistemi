@@ -325,17 +325,14 @@ async function uploadData() {
     const licenseUrl = licensePublicData.publicUrl;
 
     const pdfArea = document.createElement("div");
-    pdfArea.style.width = "190mm";
-    pdfArea.style.padding = "10mm";
-    pdfArea.style.background = "white";
-    pdfArea.style.color = "black";
-    pdfArea.style.fontFamily = "Arial";
-    pdfArea.style.fontSize = "12px";
-    pdfArea.style.lineHeight = "1.6";
     pdfArea.style.position = "fixed";
     pdfArea.style.left = "0";
     pdfArea.style.top = "0";
-    pdfArea.style.zIndex = "-1";
+    pdfArea.style.zIndex = "9999";
+    pdfArea.style.background = "white";
+    pdfArea.style.display = "block";
+    pdfArea.style.visibility = "visible";
+    pdfArea.style.opacity = "1";
 
     pdfArea.innerHTML = `
       <h2 style="text-align:center;">ONLINE ARAÇ KİRA SÖZLEŞMESİ</h2>
@@ -350,7 +347,7 @@ async function uploadData() {
       <h3>Kiracı İmzası</h3>
       <img src="${signatureImage}" style="width:260px;border-bottom:1px solid #000;">
       <p>Bu sözleşme elektronik ortamda onaylanmış ve imzalanmıştır.</p>
-    `;
+      `;
 
     document.body.appendChild(pdfArea);
 
