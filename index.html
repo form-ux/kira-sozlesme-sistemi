@@ -127,7 +127,7 @@
     <label>Ehliyet Görseli *</label>
     <input type="file" id="licenseFile" accept="image/*" required>
 
-    <button class="green" onclick="licenseCheck()">Sorgula</button>
+    <button type="button" class="green" onclick="licenseCheck()">Sorgula</button>
 
     <div id="checkStatus" class="status hidden"></div>
 
@@ -199,38 +199,6 @@
   function value(id) {
     return document.getElementById(id).value.trim();
   }
-
-function licenseCheck() {
-  const fileInput = document.getElementById("licenseFile");
-  selectedLicenseFile = fileInput.files[0];
-
-  if (!value("carInfo") || !selectedLicenseFile) {
-    alert("Lütfen araç bilgisi girin ve ehliyet görseli yükleyin.");
-    return;
-  }
-
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-
-  if (!allowedTypes.includes(selectedLicenseFile.type)) {
-    alert("Lütfen sadece ehliyet fotoğrafı yükleyin. JPG, PNG veya WEBP formatı olmalıdır.");
-    return;
-  }
-
-  const status = document.getElementById("checkStatus");
-  status.className = "status";
-  status.innerText = "Ehliyetiniz KABİS üzerinden sorgulanıyor...";
-
-  setTimeout(() => {
-    status.className = "status success";
-    status.innerText = "Ehliyetiniz onaylandı, işleme devam edebilirsiniz.";
-
-    setTimeout(() => {
-      document.getElementById("step1").classList.add("hidden");
-      document.getElementById("step2").classList.remove("hidden");
-      resizeCanvas();
-    }, 1200);
-  }, 2500);
-}
 
   const canvas = document.getElementById("signaturePad");
   const ctx = canvas.getContext("2d");
@@ -486,6 +454,43 @@ const supabaseClient = supabase.createClient(
   SUPABASE_KEY
 );
 
+</script>
+
+<script>
+function licenseCheck() {
+  const carInfo = document.getElementById("carInfo");
+  const fileInput = document.getElementById("licenseFile");
+  const status = document.getElementById("checkStatus");
+
+  if (!carInfo || !fileInput || !status) {
+    alert("Kod bağlantısında eksik alan var.");
+    return;
+  }
+
+  selectedLicenseFile = fileInput.files[0];
+
+  if (!carInfo.value.trim() || !selectedLicenseFile) {
+    alert("Lütfen araç bilgisi girin ve ehliyet görseli yükleyin.");
+    return;
+  }
+
+  status.className = "status";
+  status.innerText = "Ehliyetiniz KABİS üzerinden sorgulanıyor...";
+
+  setTimeout(function () {
+
+    status.className = "status success";
+    status.innerText = "Ehliyetiniz onaylandı.";
+
+    setTimeout(function () {
+
+      document.getElementById("step1").classList.add("hidden");
+      document.getElementById("step2").classList.remove("hidden");
+
+    }, 1000);
+
+  }, 2000);
+}
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
