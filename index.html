@@ -6,9 +6,9 @@
   <title>Kira Sözleşmesi</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
-
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -45,12 +45,7 @@
       box-sizing: border-box;
     }
 
-    textarea {
-      min-height: 100px;
-    }
-
     button {
-      background: #111;
       color: white;
       border: none;
       cursor: pointer;
@@ -90,6 +85,8 @@
       padding: 18px;
       margin-top: 20px;
       line-height: 1.6;
+      max-height: 300px;
+      overflow-y: auto;
     }
 
     canvas {
@@ -138,44 +135,18 @@
     <h2>Sözleşme</h2>
 
     <div class="contract">
-      <p>
-        1- Araçlarda HGS olup (Hızlı Geçiş Sistemi), kiracı kira dönüşü geçiş yaptığı bedel online olarak kontrol edilip araç teslim ettiğinde anlık provizyon ücretinden düşülecektir.
-      </p>
-
-      <p>
-        2- Kiralanan aracın her ne şekilde ve şartta olursa olsun kiraya verilmesi, bedelsiz de olsa üçüncü şahıslara kullandırılması yasak olup, aracın:
-       a Ek sürücü olarak belirtilmeyen sürücü tarafından aracın kullanılması.
-       b Herhangi bir vasıtayı çekmek veya itmek.
-       c Gelir karşılığı yolcu veya mal taşımasında.
-       d Türkiye Cumhuriyeti sınırları dışında kullanılmasında
-      </p>
-
-      <p>
-        3- Aracın sürücüsü alkol, uyuşturucu, uyku hapları etkisinde olmadığı sürece, aracın zarar görmesi durumunda hasar sorumluluğunu itiraz etmeksizin karşılamayı firmamız olarak kabul ediyoruz.
-      a Kasko ve sigorta poliçesi ücretleri (50.000 TL) 15 dakika içerisinde tahsil edilecektir. Sözleşme imzalandiktan sonra iptal edilirse cayma bedeli uygulanir. Araç kasko bedelinin %25'i tarafiniza teminat davasi olarak gönderilir.
-      b Kaza anında alkol, uyuşturucu veya uyku geciktirici ilaçlar etkisi altındaysanız; yasal hız sınırlarının aşıldığı durumlarda ve aracın zarar görmesi durumunda masraflar kiracıya aittir.
-      c Sözleşmenin akdinden sonra kiracı herhangi bir nedenle araç kullanma yetkisini kaybederse (ehliyete el konulması durumunda) aracın konumunu atarak vale görevlimize teslim etmesi gerekir.
-      d Araçla alkollü veya uyuşturucu etkisinde kaza yapmanız durumunda araç masrafı ve aracın minimum 120.000 TL pert (değer kaybı) bedeli sizlere aittir.
-      e Kiracı ve kira sözleşmesinde ek sürücü olarak belirlenenlerin haricindeki şahısların aracı kullanması neticesinde meydana gelen hasar ve/veya kazalarda: Aracın çalınması veya zarar görmesi durumunda kasko ve sigorta firmaları araç masraflarını öder. Kazalarda yaralanmalı veya ölümlü durumlarda kasko ve sigorta firmaları sizlere ödeme yapmakla yükümlüdür.
-      f Kiracı, işbu araç kiralama sözleşmesini imzaladıktan sonra, aracın teslim tarihinden önce veya sonra, herhangi bir gerekçe göstermeksizin sözleşmeden tek taraflı olarak cayması halinde, 10.000 TL tutarında cezai şartı, ayrıca ihtara gerek olmaksızın kiralayana ödemeyi kabul, beyan ve taahhüt eder.
-      </p>
-
-      <p>
-        4- Kiracının kiralanan araç ile karıştığı herhangi bir kazada; kiracı alkol, uyuşturucu etkisinde olay yerini terk etmesi durumunda, doğrudan ve dolaylı zararlar kiracıdan talep edilecektir.
-      </p>
-
-      <p>
-        NOT: Görüşmelerimiz kayıt altına alınmaktadır. Sözleşmenin WhatsApp üzerinden atılması gereklidir. Sözleşme muhasebe departmanımız tarafından atılacaktır.
-      </p>
+      <p>1- Araçlarda HGS olup, kiracı kira dönüşü geçiş yaptığı bedeli kabul eder.</p>
+      <p>2- Kiralanan aracın üçüncü şahıslara kullandırılması yasaktır.</p>
+      <p>3- Araçta oluşabilecek trafik cezaları, hasarlar ve ek ücretlerden kiracı sorumludur.</p>
+      <p>4- Kiracı, aracı teslim aldığı şekilde geri teslim edeceğini kabul eder.</p>
+      <p>NOT: Görüşmelerimiz kayıt altına alınmaktadır. Sözleşme muhasebe departmanımız tarafından atılacaktır.</p>
     </div>
 
     <label>İmza Alanı *</label>
     <canvas id="signaturePad"></canvas>
-    <div id="signaturePreview"></div>
 
-    <button class="red" onclick="clearSignature()">İmzayı Temizle</button>
-
-    <button class="green" onclick="uploadData()">Bilgileri Yükle</button>
+    <button type="button" class="red" onclick="clearSignature()">İmzayı Temizle</button>
+    <button type="button" class="green" onclick="uploadData()">Bilgileri Yükle</button>
 
     <div id="uploadStatus" class="status hidden"></div>
 
@@ -186,11 +157,6 @@
   </p>
 
 </div>
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 const SUPABASE_URL = "https://ijxtrulwabiroriujwip.supabase.co";
@@ -291,16 +257,16 @@ function clearSignature() {
 }
 
 async function uploadData() {
-  if (!isSigned) {
-    const uploadStatus = document.getElementById("uploadStatus");
-    uploadStatus.className = "status";
-    uploadStatus.innerText = "Lütfen imza atın.";
-    return;
-  }
-
   const uploadStatus = document.getElementById("uploadStatus");
   uploadStatus.className = "status";
+  uploadStatus.innerText = "İşlem yapılıyor...";
+
   try {
+    if (!isSigned) {
+      uploadStatus.innerText = "Lütfen imza atın.";
+      return;
+    }
+
     const carInfo = value("carInfo");
     const signatureImage = canvas.toDataURL("image/png");
 
@@ -324,45 +290,41 @@ async function uploadData() {
 
     const licenseUrl = licensePublicData.publicUrl;
 
-    const pdfArea = document.createElement("div");
-    pdfArea.style.position = "fixed";
-    pdfArea.style.left = "0";
-    pdfArea.style.top = "0";
-    pdfArea.style.zIndex = "9999";
-    pdfArea.style.background = "white";
-    pdfArea.style.display = "block";
-    pdfArea.style.visibility = "visible";
-    pdfArea.style.opacity = "1";
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF("p", "mm", "a4");
 
-    pdfArea.innerHTML = `
-      <h2 style="text-align:center;">ONLINE ARAÇ KİRA SÖZLEŞMESİ</h2>
-      <p><strong>Araç Bilgisi:</strong> ${carInfo}</p>
-      <p><strong>Tarih:</strong> ${new Date().toLocaleString("tr-TR")}</p>
-      <hr>
-      <p>1- Araçlarda HGS olup, kiracı kira dönüşü geçiş yaptığı bedelin kontrol edilmesini kabul eder.</p>
-      <p>2- Kiralanan aracın üçüncü şahıslara kullandırılması yasaktır.</p>
-      <p>3- Araçta oluşabilecek trafik cezaları, hasarlar ve ek ücretlerden kiracı sorumludur.</p>
-      <p>4- Kiracı, aracı teslim aldığı şekilde geri teslim edeceğini kabul eder.</p>
-      <br>
-      <h3>Kiracı İmzası</h3>
-      <img src="${signatureImage}" style="width:260px;border-bottom:1px solid #000;">
-      <p>Bu sözleşme elektronik ortamda onaylanmış ve imzalanmıştır.</p>
-      `;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("ONLINE ARAC KIRA SOZLESMESI", 105, 20, { align: "center" });
 
-    document.body.appendChild(pdfArea);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const pdfBlob = await html2pdf()
-      .set({
-        margin: 8,
-        filename: "sozlesme.pdf",
-        image: { type: "jpeg", quality: 1 },
-        html2canvas: { scale: 2, backgroundColor: "#ffffff" },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-      })
-      .from(pdfArea)
-      .outputPdf("blob");
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
 
-    document.body.removeChild(pdfArea);
+    doc.text("Arac Bilgisi: " + carInfo, 15, 35);
+    doc.text("Tarih: " + new Date().toLocaleString("tr-TR"), 15, 43);
+
+    const maddeler = [
+      "1- Araclarda HGS olup, kiraci kira donusu gecis yaptigi bedeli kabul eder.",
+      "2- Kiralanan aracin ucuncu sahislara kullandirilmasi yasaktir.",
+      "3- Trafik cezalari, hasarlar ve ek ucretlerden kiraci sorumludur.",
+      "4- Kiraci, araci teslim aldigi sekilde geri teslim edecegini kabul eder.",
+      "NOT: Bu sozlesme elektronik ortamda onaylanmis ve imzalanmistir."
+    ];
+
+    let y = 60;
+
+    maddeler.forEach((madde) => {
+      const lines = doc.splitTextToSize(madde, 180);
+      doc.text(lines, 15, y);
+      y += lines.length * 7 + 4;
+    });
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Kiraci Imzasi", 15, y + 10);
+
+    doc.addImage(signatureImage, "PNG", 15, y + 15, 70, 35);
+
+    const pdfBlob = doc.output("blob");
 
     const pdfFileName = Date.now() + "-sozlesme.pdf";
 
@@ -406,5 +368,6 @@ async function uploadData() {
 
 window.addEventListener("resize", resizeCanvas);
 </script>
+
 </body>
 </html>
