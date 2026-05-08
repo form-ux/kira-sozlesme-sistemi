@@ -299,8 +299,27 @@ async function uploadData() {
 
   alert("Bilgiler yükleniyor...");
 
-  // Şimdilik test için
-  alert("Buton çalışıyor. Şimdi PDF ve Supabase kaydını tekrar bağlayacağız.");
+  const carInfo = value("carInfo");
+  const signatureImage = canvas.toDataURL("image/png");
+
+  try {
+    const { error } = await client
+      .from("rental_contracts")
+      .insert([
+        {
+          car_info: carInfo,
+          signature_image: signatureImage,
+          status: "onaylandi"
+        }
+      ]);
+
+    if (error) throw error;
+
+    alert("Bilgiler başarıyla Supabase’e kaydedildi.");
+  } catch (error) {
+    alert("Hata oluştu: " + error.message);
+    console.log(error);
+  }
 }
 
 window.addEventListener("resize", resizeCanvas);
