@@ -191,10 +191,10 @@
     const fileInput = document.getElementById("licenseFile");
     selectedLicenseFile = fileInput.files[0];
 
-    if (!value("fullName") || !value("phone") || !value("carInfo") || !selectedLicenseFile) {
-      alert("Lütfen zorunlu alanları doldurun ve ehliyet görseli yükleyin.");
-      return;
-    }
+  if (!value("carInfo") || !selectedLicenseFile) {
+  alert("Lütfen araç bilgisi girin ve ehliyet görseli yükleyin.");
+  return;
+  }
 
     const status = document.getElementById("checkStatus");
     status.className = "status";
