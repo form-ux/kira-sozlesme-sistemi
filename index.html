@@ -200,57 +200,37 @@
     return document.getElementById(id).value.trim();
   }
 
-  function licenseCheck() {
-    const fileInput = document.getElementById("licenseFile");
-    selectedLicenseFile = fileInput.files[0];
+function licenseCheck() {
+  const fileInput = document.getElementById("licenseFile");
+  selectedLicenseFile = fileInput.files[0];
 
   if (!value("carInfo") || !selectedLicenseFile) {
-  alert("Lütfen araç bilgisi girin ve ehliyet görseli yükleyin.");
-  return;
+    alert("Lütfen araç bilgisi girin ve ehliyet görseli yükleyin.");
+    return;
   }
 
   const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
-if (!allowedTypes.includes(selectedLicenseFile.type)) {
-  alert("Lütfen sadece ehliyet fotoğrafı yükleyin. JPG, PNG veya WEBP formatı olmalıdır.");
-  return;
-}
-
-if (selectedLicenseFile.size < 50000) {
-  alert("Yüklenen görsel çok küçük görünüyor. Lütfen net bir ehliyet fotoğrafı yükleyin.");
-  return;
-}
-
-const fileName = selectedLicenseFile.name.toLowerCase();
-
-if (
-  !fileName.includes("ehliyet") &&
-  !fileName.includes("surucu") &&
-  !fileName.includes("sürücü") &&
-  !fileName.includes("license")
-) {
-  const devam = confirm("Yüklediğiniz dosya ehliyet gibi görünmüyor. Yine de devam etmek istiyor musunuz?");
-  if (!devam) {
+  if (!allowedTypes.includes(selectedLicenseFile.type)) {
+    alert("Lütfen sadece ehliyet fotoğrafı yükleyin. JPG, PNG veya WEBP formatı olmalıdır.");
     return;
   }
-}
 
-    const status = document.getElementById("checkStatus");
-    status.className = "status";
-    status.innerText = "Ehliyet belgeniz kontrol ediliyor...";
+  const status = document.getElementById("checkStatus");
+  status.className = "status";
+  status.innerText = "Ehliyetiniz KABİS üzerinden sorgulanıyor...";
+
+  setTimeout(() => {
+    status.className = "status success";
+    status.innerText = "Ehliyetiniz onaylandı, işleme devam edebilirsiniz.";
 
     setTimeout(() => {
-      status.className = "status success";
-      status.innerText = "Ehliyetiniz onaylandı, işleme devam edebilirsiniz.";
-
-      setTimeout(() => {
-        document.getElementById("step1").classList.add("hidden");
-        document.getElementById("step2").classList.remove("hidden");
-        resizeCanvas();
-      }, 1200);
-
-    }, 2500);
-  }
+      document.getElementById("step1").classList.add("hidden");
+      document.getElementById("step2").classList.remove("hidden");
+      resizeCanvas();
+    }, 1200);
+  }, 2500);
+}
 
   const canvas = document.getElementById("signaturePad");
   const ctx = canvas.getContext("2d");
