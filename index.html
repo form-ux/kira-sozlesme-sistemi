@@ -506,25 +506,6 @@ const supabaseClient = supabase.createClient(
   SUPABASE_KEY
 );
 
-async function uploadData() {
-
-  const carInfo = document.getElementById("carInfo").value;
-
-  const { data, error } = await supabaseClient
-    .from("rental_contracts")
-    .insert([
-      {
-        car_info: carInfo
-      }
-    ]);
-
-  if(error){
-    alert("Hata oluştu");
-    console.log(error);
-  } else {
-    alert("Bilgiler başarıyla gönderildi");
-  }
-}
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
