@@ -301,8 +301,6 @@ async function uploadData() {
 
   const uploadStatus = document.getElementById("uploadStatus");
   uploadStatus.className = "status";
-  uploadStatus.innerText = "Bilgiler yükleniyor...";
-
   try {
     const carInfo = value("carInfo");
     const signatureImage = canvas.toDataURL("image/png");
