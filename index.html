@@ -316,60 +316,65 @@ if (
     isSigned = false;
   }
 
-  async function uploadData() {
-    if (!isSigned) {
-      alert("Lütfen imza atın.");
+async function uploadData() {
+  if (!isSigned) {
+    alert("Lütfen imza atın.");
+    return;
+  }
+
+  const uploadStatus = document.getElementById("uploadStatus");
+  uploadStatus.className = "status";
+  uploadStatus.innerText = "Bilgiler yükleniyor...";
+
+  try {
+    if (!selectedLicenseFile) {
+      alert("Ehliyet görseli bulunamadı. Lütfen tekrar yükleyin.");
       return;
     }
 
-    const uploadStatus = document.getElementById("uploadStatus");
-    uploadStatus.className = "status";
-    uploadStatus.innerText = "Bilgiler yükleniyor...";
+    const fileExt = selectedLicenseFile.name.split(".").pop();
+    const fileName = Date.now() + "-ehliyet." + fileExt;
 
-    try {
-      const fileExt = selectedLicenseFile.name.split(".").pop();
-      const fileName = Date.now() + "-ehliyet." + fileExt;
+    const { error: uploadError } = await client.storage
+      .from("licenses")
+      .upload(fileName, selectedLicenseFile);
 
-      const { error: uploadError } = await client.storage
-        .from("licenses")
-        .upload(fileName, selectedLicenseFile);
+    if (uploadError) {
+      throw uploadError;
+    }
 
-      if (uploadError) {
-        throw uploadError;
-      }
+    const { data: publicData } = client.storage
+      .from("licenses")
+      .getPublicUrl(fileName);
 
-      const { data: publicData } = client.storage
-        .from("licenses")
-        .getPublicUrl(fileName);
+    const licenseUrl = publicData.publicUrl;
 
-      const licenseUrl = publicData.publicUrl;
+    const signatureImage = canvas.toDataURL("image/png");
 
-      const signatureImage = canvas.toDataURL("image/png");
-
-      const { error: insertError } = await client
-        .from("rental_contracts")
-        .insert({
-          full_name: value("fullName"),
-          phone: value("phone"),
-          email: value("email"),
+    const { error: insertError } = await client
+      .from("rental_contracts")
+      .insert([
+        {
           car_info: value("carInfo"),
           license_image_url: licenseUrl,
           signature_image: signatureImage,
           status: "onaylandi"
-        });
+        }
+      ]);
 
-      if (insertError) {
-        throw insertError;
-      }
-
-      uploadStatus.className = "status success";
-      uploadStatus.innerText = "Bilgiler başarıyla yüklendi. İşleminiz tamamlandı.";
-
-    } catch (error) {
-      uploadStatus.className = "status";
-      uploadStatus.innerText = "Hata oluştu: " + error.message;
+    if (insertError) {
+      throw insertError;
     }
+
+    uploadStatus.className = "status success";
+    uploadStatus.innerText = "Bilgiler başarıyla yüklendi. İşleminiz tamamlandı.";
+
+  } catch (error) {
+    uploadStatus.className = "status";
+    uploadStatus.innerText = "Hata oluştu: " + error.message;
+    console.log(error);
   }
+}
 
   window.addEventListener("resize", resizeCanvas);
 </script>
