@@ -293,31 +293,119 @@ function clearSignature() {
 
 async function uploadData() {
   if (!isSigned) {
-    alert("Lütfen imza atın.");
+    const uploadStatus = document.getElementById("uploadStatus");
+    uploadStatus.className = "status";
+    uploadStatus.innerText = "Lütfen imza atın.";
     return;
   }
 
-  alert("Bilgiler yükleniyor...");
-
-  const carInfo = value("carInfo");
-  const signatureImage = canvas.toDataURL("image/png");
+  const uploadStatus = document.getElementById("uploadStatus");
+  uploadStatus.className = "status";
+  uploadStatus.innerText = "Bilgiler yükleniyor...";
 
   try {
-    const { error } = await client
+    const carInfo = value("carInfo");
+    const signatureImage = canvas.toDataURL("image/png");
+
+    if (!selectedLicenseFile) {
+      uploadStatus.innerText = "Ehliyet görseli bulunamadı.";
+      return;
+    }
+
+    const fileExt = selectedLicenseFile.name.split(".").pop();
+    const licenseFileName = Date.now() + "-ehliyet." + fileExt;
+
+    const { error: licenseUploadError } = await client.storage
+      .from("licenses")
+      .upload(licenseFileName, selectedLicenseFile);
+
+    if (licenseUploadError) throw licenseUploadError;
+
+    const { data: licensePublicData } = client.storage
+      .from("licenses")
+      .getPublicUrl(licenseFileName);
+
+    const licenseUrl = licensePublicData.publicUrl;
+
+    const pdfArea = document.createElement("div");
+    pdfArea.style.width = "190mm";
+    pdfArea.style.padding = "10mm";
+    pdfArea.style.background = "white";
+    pdfArea.style.color = "black";
+    pdfArea.style.fontFamily = "Arial";
+    pdfArea.style.fontSize = "12px";
+    pdfArea.style.lineHeight = "1.6";
+    pdfArea.style.position = "fixed";
+    pdfArea.style.left = "0";
+    pdfArea.style.top = "0";
+    pdfArea.style.zIndex = "-1";
+
+    pdfArea.innerHTML = `
+      <h2 style="text-align:center;">ONLINE ARAÇ KİRA SÖZLEŞMESİ</h2>
+      <p><strong>Araç Bilgisi:</strong> ${carInfo}</p>
+      <p><strong>Tarih:</strong> ${new Date().toLocaleString("tr-TR")}</p>
+      <hr>
+      <p>1- Araçlarda HGS olup, kiracı kira dönüşü geçiş yaptığı bedelin kontrol edilmesini kabul eder.</p>
+      <p>2- Kiralanan aracın üçüncü şahıslara kullandırılması yasaktır.</p>
+      <p>3- Araçta oluşabilecek trafik cezaları, hasarlar ve ek ücretlerden kiracı sorumludur.</p>
+      <p>4- Kiracı, aracı teslim aldığı şekilde geri teslim edeceğini kabul eder.</p>
+      <br>
+      <h3>Kiracı İmzası</h3>
+      <img src="${signatureImage}" style="width:260px;border-bottom:1px solid #000;">
+      <p>Bu sözleşme elektronik ortamda onaylanmış ve imzalanmıştır.</p>
+    `;
+
+    document.body.appendChild(pdfArea);
+
+    const pdfBlob = await html2pdf()
+      .set({
+        margin: 8,
+        filename: "sozlesme.pdf",
+        image: { type: "jpeg", quality: 1 },
+        html2canvas: { scale: 2, backgroundColor: "#ffffff" },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+      })
+      .from(pdfArea)
+      .outputPdf("blob");
+
+    document.body.removeChild(pdfArea);
+
+    const pdfFileName = Date.now() + "-sozlesme.pdf";
+
+    const { error: pdfUploadError } = await client.storage
+      .from("contracts")
+      .upload(pdfFileName, pdfBlob, {
+        contentType: "application/pdf"
+      });
+
+    if (pdfUploadError) throw pdfUploadError;
+
+    const { data: pdfPublicData } = client.storage
+      .from("contracts")
+      .getPublicUrl(pdfFileName);
+
+    const contractPdfUrl = pdfPublicData.publicUrl;
+
+    const { error: insertError } = await client
       .from("rental_contracts")
       .insert([
         {
           car_info: carInfo,
+          license_image_url: licenseUrl,
           signature_image: signatureImage,
+          contract_pdf_url: contractPdfUrl,
           status: "onaylandi"
         }
       ]);
 
-    if (error) throw error;
+    if (insertError) throw insertError;
 
-    alert("Bilgiler başarıyla Supabase’e kaydedildi.");
+    uploadStatus.className = "status success";
+    uploadStatus.innerText = "Bilgiler başarıyla yüklendi.";
+
   } catch (error) {
-    alert("Hata oluştu: " + error.message);
+    uploadStatus.className = "status";
+    uploadStatus.innerText = "Hata oluştu: " + error.message;
     console.log(error);
   }
 }
