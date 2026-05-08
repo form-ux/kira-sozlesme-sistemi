@@ -350,7 +350,7 @@ async function uploadData() {
       `;
 
     document.body.appendChild(pdfArea);
-
+    await new Promise(resolve => setTimeout(resolve, 1000));
     const pdfBlob = await html2pdf()
       .set({
         margin: 8,
