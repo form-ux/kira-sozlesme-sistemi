@@ -187,289 +187,33 @@
 
 </div>
 
-<script>
-  const SUPABASE_URL = "https://ijxtrulwabiroriujwip.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_jt8EdUUUIyvgkTyXvGo12A_G8POvqN7";
 
-  const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  function resizeCanvas() {}
-  let selectedLicenseFile = null;
-  let isSigned = false;
 
-  function value(id) {
-    return document.getElementById(id).value.trim();
-  }
-
-  const canvas = document.getElementById("signaturePad");
-  const ctx = canvas.getContext("2d");
-  let drawing = false;
-
-  function resizeCanvas() {
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = 220;
-    ctx.lineWidth = 3;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#111";
-  }
-
-  function getPosition(e) {
-    const rect = canvas.getBoundingClientRect();
-
-    if (e.touches && e.touches.length > 0) {
-      return {
-        x: e.touches[0].clientX - rect.left,
-        y: e.touches[0].clientY - rect.top
-      };
-    }
-
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    };
-  }
-
-  function startDraw(e) {
-    e.preventDefault();
-    drawing = true;
-    isSigned = true;
-    const pos = getPosition(e);
-    ctx.beginPath();
-    ctx.moveTo(pos.x, pos.y);
-  }
-
-  function draw(e) {
-    if (!drawing) return;
-    e.preventDefault();
-    const pos = getPosition(e);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.stroke();
-  }
-
-  function endDraw(e) {
-    e.preventDefault();
-    drawing = false;
-  }
-
-  canvas.addEventListener("mousedown", startDraw);
-  canvas.addEventListener("mousemove", draw);
-  canvas.addEventListener("mouseup", endDraw);
-  canvas.addEventListener("mouseleave", endDraw);
-
-  canvas.addEventListener("touchstart", startDraw);
-  canvas.addEventListener("touchmove", draw);
-  canvas.addEventListener("touchend", endDraw);
-
-  function clearSignature() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    isSigned = false;
-  }
-
-async function uploadData() {
-  if (!isSigned) {
-    alert("Lütfen imza atın.");
-    return;
-  }
-
-  const uploadStatus = document.getElementById("uploadStatus");
-  uploadStatus.className = "status";
-  uploadStatus.innerText = "Bilgiler yükleniyor...";
-
-  try {
-    if (!selectedLicenseFile) {
-      alert("Ehliyet görseli bulunamadı. Lütfen tekrar yükleyin.");
-      return;
-    }
-   const signaturePreview = document.getElementById("signaturePreview");
-
-signaturePreview.innerHTML = `
-  <h3>İmza</h3>
-  <img src="${canvas.toDataURL()}" 
-       style="width:250px;border-top:1px solid #000;margin-top:10px;">
-`;
-    const signatureData = canvas.toDataURL("image/png");
-
-const pdfArea = document.createElement("div");
-pdfArea.style.width = "190mm";
-pdfArea.style.minHeight = "270mm";
-pdfArea.style.padding = "10mm";
-pdfArea.style.background = "white";
-pdfArea.style.color = "black";
-pdfArea.style.fontFamily = "Arial, sans-serif";
-pdfArea.style.fontSize = "12px";
-pdfArea.style.lineHeight = "1.6";
-pdfArea.style.position = "absolute";
-pdfArea.style.left = "0";
-pdfArea.style.top = "0";
-pdfArea.style.zIndex = "9999";
-
-pdfArea.innerHTML = `
-  <h2 style="text-align:center;">ONLINE ARAÇ KİRA SÖZLEŞMESİ</h2>
-
-  <p><strong>Araç Bilgisi:</strong> ${value("carInfo")}</p>
-  <p><strong>Tarih:</strong> ${new Date().toLocaleString("tr-TR")}</p>
-
-  <hr>
-
-  <h3>Sözleşme Maddeleri</h3>
-
-  <p>1- Araçlarda HGS olup, kiracı kira dönüşü geçiş yaptığı bedelin kontrol edilmesini kabul eder.</p>
-  <p>2- Kiralanan aracın üçüncü şahıslara kullandırılması yasaktır.</p>
-  <p>3- Aracın alkollü, uyuşturucu veya dikkat bozucu ilaç etkisi altında kullanılması yasaktır.</p>
-  <p>4- Araçta oluşabilecek trafik cezaları, hasarlar ve ek ücretlerden kiracı sorumludur.</p>
-  <p>5- Kiracı, aracı teslim aldığı şekilde geri teslim edeceğini kabul eder.</p>
-
-  <br><br>
-
-  <h3>Kiracı İmzası</h3>
-  <img src="${signatureData}" style="width:260px;height:auto;border-bottom:1px solid #000;">
-
-  <p style="margin-top:30px;">Bu sözleşme elektronik ortamda onaylanmış ve imzalanmıştır.</p>
-`;
-
-document.body.appendChild(pdfArea);
-
-await new Promise(resolve => setTimeout(resolve, 500));
-
-const opt = {
-  margin: 8,
-  filename: "sozlesme.pdf",
-  image: { type: "jpeg", quality: 1 },
-  html2canvas: {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff"
-  },
-  jsPDF: {
-    unit: "mm",
-    format: "a4",
-    orientation: "portrait"
-  }
-};
-
-const pdfBlob = await html2pdf()
-  .set(opt)
-  .from(pdfArea)
-  .outputPdf("blob");
-
-document.body.removeChild(pdfArea);
-
-const contractElement = pdfArea;
-
-    const opt = {
-  margin: 8,
-  filename: 'sozlesme.pdf',
-  image: { type: 'jpeg', quality: 1 },
-  html2canvas: {
-    scale: 2,
-    useCORS: true
-  },
-  jsPDF: {
-    unit: 'mm',
-    format: 'a4',
-    orientation: 'portrait'
-  }
-};
-
-const pdfBlob = await html2pdf()
-  .set(opt)
-  .from(contractElement)
-  .outputPdf('blob');
-
-  document.body.removeChild(pdfArea);
-
-    const pdfFileName = Date.now() + "-sozlesme.pdf";
-
-    const { error: pdfUploadError } = await client.storage
-      .from("contracts")
-      .upload(pdfFileName, pdfBlob, {
-        contentType: "application/pdf"
-      });
-
-    if (pdfUploadError) {
-      throw pdfUploadError;
-    }
-
-    const { data: pdfPublicData } = client.storage
-      .from("contracts")
-      .getPublicUrl(pdfFileName);
-
-    const contractPdfUrl = pdfPublicData.publicUrl;
-
-    const fileExt = selectedLicenseFile.name.split(".").pop();
-    const fileName = Date.now() + "-ehliyet." + fileExt;
-
-    const { error: uploadError } = await client.storage
-      .from("licenses")
-      .upload(fileName, selectedLicenseFile);
-
-    if (uploadError) {
-      throw uploadError;
-    }
-
-    const { data: publicData } = client.storage
-      .from("licenses")
-      .getPublicUrl(fileName);
-
-    const licenseUrl = publicData.publicUrl;
-
-    const signatureImage = canvas.toDataURL("image/png");
-
-    const { error: insertError } = await client
-      .from("rental_contracts")
-      .insert([
-        {
-          car_info: value("carInfo"),
-          license_image_url: licenseUrl,
-          signature_image: signatureImage,
-          contract_pdf_url: contractPdfUrl,
-          status: "onaylandi"
-        }
-      ]);
-
-    if (insertError) {
-      throw insertError;
-    }
-
-    uploadStatus.className = "status success";
-    uploadStatus.innerText = "Bilgiler başarıyla yüklendi. Sözleşme PDF olarak kaydedildi.";
-
-  } catch (error) {
-    uploadStatus.className = "status";
-    uploadStatus.innerText = "Hata oluştu: " + error.message;
-    console.log(error);
-  }
-}
-
-  window.addEventListener("resize", resizeCanvas);
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <script>
 const SUPABASE_URL = "https://ijxtrulwabiroriujwip.supabase.co";
+const SUPABASE_KEY = "BURAYA_KENDI_PUBLISHABLE_KEYINI_YAZ";
 
-const SUPABASE_KEY = "sb_publishable_jt8EdUUUIyvgkTyXvGo12A_G8POvqN7";
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+let selectedLicenseFile = null;
+let isSigned = false;
 
-</script>
+function value(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : "";
+}
 
-<script>
 function licenseCheck() {
-  const carInfo = document.getElementById("carInfo");
   const fileInput = document.getElementById("licenseFile");
   const status = document.getElementById("checkStatus");
 
-  if (!carInfo || !fileInput || !status) {
-    alert("Kod bağlantısında eksik alan var.");
-    return;
-  }
-
   selectedLicenseFile = fileInput.files[0];
 
-  if (!carInfo.value.trim() || !selectedLicenseFile) {
+  if (!value("carInfo") || !selectedLicenseFile) {
     alert("Lütfen araç bilgisi girin ve ehliyet görseli yükleyin.");
     return;
   }
@@ -477,23 +221,89 @@ function licenseCheck() {
   status.className = "status";
   status.innerText = "Ehliyetiniz KABİS üzerinden sorgulanıyor...";
 
-  setTimeout(function () {
-
+  setTimeout(() => {
     status.className = "status success";
     status.innerText = "Ehliyetiniz onaylandı.";
 
-    setTimeout(function () {
-
+    setTimeout(() => {
       document.getElementById("step1").classList.add("hidden");
       document.getElementById("step2").classList.remove("hidden");
-
+      resizeCanvas();
     }, 1000);
-
   }, 2000);
 }
+
+const canvas = document.getElementById("signaturePad");
+const ctx = canvas.getContext("2d");
+let drawing = false;
+
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = 220;
+  ctx.lineWidth = 3;
+  ctx.lineCap = "round";
+  ctx.strokeStyle = "#111";
+}
+
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches ? e.touches[0] : e;
+  return {
+    x: touch.clientX - rect.left,
+    y: touch.clientY - rect.top
+  };
+}
+
+function startDraw(e) {
+  e.preventDefault();
+  drawing = true;
+  isSigned = true;
+  const pos = getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
+}
+
+function draw(e) {
+  if (!drawing) return;
+  e.preventDefault();
+  const pos = getPos(e);
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+}
+
+function endDraw(e) {
+  e.preventDefault();
+  drawing = false;
+}
+
+canvas.addEventListener("mousedown", startDraw);
+canvas.addEventListener("mousemove", draw);
+canvas.addEventListener("mouseup", endDraw);
+canvas.addEventListener("mouseleave", endDraw);
+
+canvas.addEventListener("touchstart", startDraw);
+canvas.addEventListener("touchmove", draw);
+canvas.addEventListener("touchend", endDraw);
+
+function clearSignature() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  isSigned = false;
+}
+
+async function uploadData() {
+  if (!isSigned) {
+    alert("Lütfen imza atın.");
+    return;
+  }
+
+  alert("Bilgiler yükleniyor...");
+
+  // Şimdilik test için
+  alert("Buton çalışıyor. Şimdi PDF ve Supabase kaydını tekrar bağlayacağız.");
+}
+
+window.addEventListener("resize", resizeCanvas);
 </script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
 </body>
 </html>
