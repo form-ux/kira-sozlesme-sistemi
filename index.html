@@ -191,7 +191,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
 const SUPABASE_URL = "https://ijxtrulwabiroriujwip.supabase.co";
@@ -304,6 +303,27 @@ async function uploadData() {
   try {
     const carInfo = value("carInfo");
     const signatureImage = canvas.toDataURL("image/png");
+
+
+pdfArea.style.padding = "30px";
+pdfArea.style.background = "white";
+pdfArea.style.color = "black";
+
+pdfArea.innerHTML = `
+<h1>ONLINE ARAÇ KİRA SÖZLEŞMESİ</h1>
+
+<p><strong>Araç:</strong> ${carInfo}</p>
+
+<h3>İmza</h3>
+
+<img src="${signatureImage}" width="250">
+
+<hr>
+
+<p>
+Bu sözleşme elektronik ortamda onaylanmıştır.
+</p>
+`;
 
     if (!selectedLicenseFile) {
       uploadStatus.innerText = "Ehliyet görseli bulunamadı.";
