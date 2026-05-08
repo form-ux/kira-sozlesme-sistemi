@@ -343,12 +343,17 @@ signaturePreview.innerHTML = `
 
 const pdfArea = document.createElement("div");
 pdfArea.style.width = "190mm";
+pdfArea.style.minHeight = "270mm";
 pdfArea.style.padding = "10mm";
-pdfArea.style.background = "#fff";
-pdfArea.style.color = "#000";
+pdfArea.style.background = "white";
+pdfArea.style.color = "black";
 pdfArea.style.fontFamily = "Arial, sans-serif";
 pdfArea.style.fontSize = "12px";
 pdfArea.style.lineHeight = "1.6";
+pdfArea.style.position = "absolute";
+pdfArea.style.left = "0";
+pdfArea.style.top = "0";
+pdfArea.style.zIndex = "9999";
 
 pdfArea.innerHTML = `
   <h2 style="text-align:center;">ONLINE ARAÇ KİRA SÖZLEŞMESİ</h2>
@@ -361,13 +366,9 @@ pdfArea.innerHTML = `
   <h3>Sözleşme Maddeleri</h3>
 
   <p>1- Araçlarda HGS olup, kiracı kira dönüşü geçiş yaptığı bedelin kontrol edilmesini kabul eder.</p>
-
   <p>2- Kiralanan aracın üçüncü şahıslara kullandırılması yasaktır.</p>
-
   <p>3- Aracın alkollü, uyuşturucu veya dikkat bozucu ilaç etkisi altında kullanılması yasaktır.</p>
-
   <p>4- Araçta oluşabilecek trafik cezaları, hasarlar ve ek ücretlerden kiracı sorumludur.</p>
-
   <p>5- Kiracı, aracı teslim aldığı şekilde geri teslim edeceğini kabul eder.</p>
 
   <br><br>
@@ -379,6 +380,31 @@ pdfArea.innerHTML = `
 `;
 
 document.body.appendChild(pdfArea);
+
+await new Promise(resolve => setTimeout(resolve, 500));
+
+const opt = {
+  margin: 8,
+  filename: "sozlesme.pdf",
+  image: { type: "jpeg", quality: 1 },
+  html2canvas: {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: "#ffffff"
+  },
+  jsPDF: {
+    unit: "mm",
+    format: "a4",
+    orientation: "portrait"
+  }
+};
+
+const pdfBlob = await html2pdf()
+  .set(opt)
+  .from(pdfArea)
+  .outputPdf("blob");
+
+document.body.removeChild(pdfArea);
 
 const contractElement = pdfArea;
 
