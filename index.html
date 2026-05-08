@@ -133,7 +133,7 @@
 
   </div>
 
-  <div id="step2" class="hidden">
+  <div id="contractContent">
 
     <h2>Sözleşme</h2>
 
@@ -171,6 +171,7 @@
 
     <label>İmza Alanı *</label>
     <canvas id="signaturePad"></canvas>
+    <div id="signaturePreview"></div>
 
     <button class="red" onclick="clearSignature()">İmzayı Temizle</button>
 
@@ -331,12 +332,34 @@ async function uploadData() {
       alert("Ehliyet görseli bulunamadı. Lütfen tekrar yükleyin.");
       return;
     }
+   const signaturePreview = document.getElementById("signaturePreview");
 
-    const contractElement = document.querySelector(".container");
+signaturePreview.innerHTML = `
+  <h3>İmza</h3>
+  <img src="${canvas.toDataURL()}" 
+       style="width:250px;border-top:1px solid #000;margin-top:10px;">
+`;
+    const contractElement = document.getElementById("contractContent");
 
-    const pdfBlob = await html2pdf()
-      .from(contractElement)
-      .outputPdf("blob");
+    const opt = {
+  margin: 10,
+  filename: 'sozlesme.pdf',
+  image: { type: 'jpeg', quality: 1 },
+  html2canvas: {
+    scale: 2,
+    useCORS: true
+  },
+  jsPDF: {
+    unit: 'mm',
+    format: 'a4',
+    orientation: 'portrait'
+  }
+};
+
+const pdfBlob = await html2pdf()
+  .set(opt)
+  .from(contractElement)
+  .outputPdf('blob');
 
     const pdfFileName = Date.now() + "-sozlesme.pdf";
 
