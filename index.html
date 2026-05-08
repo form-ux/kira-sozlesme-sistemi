@@ -317,6 +317,11 @@ if (
   }
 
 async function uploadData() {
+  const contractElement = document.querySelector(".container");
+
+html2pdf()
+  .from(contractElement)
+  .save("sozlesme.pdf");
   if (!isSigned) {
     alert("Lütfen imza atın.");
     return;
@@ -409,6 +414,8 @@ async function uploadData() {
   }
 }
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 </body>
 </html>
