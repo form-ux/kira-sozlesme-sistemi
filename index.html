@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kira Sözleşmesi</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f4f7;
+      color: #111;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 30px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 8px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 100px;
+    }
+
+    button {
+      background: #111;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button.green {
+      background: #16a34a;
+    }
+
+    button.red {
+      background: #b00020;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .status {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 12px;
+      background: #eef6ff;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .success {
+      background: #ecfdf5;
+      color: #166534;
+    }
+
+    .contract {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 18px;
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+
+    canvas {
+      width: 100%;
+      height: 220px;
+      border: 2px dashed #999;
+      border-radius: 12px;
+      margin-top: 10px;
+      touch-action: none;
+      background: white;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>Online Kira Sözleşmesi</h1>
+
+  <div id="step1">
+
+    <h2>Ehliyet Yükleme</h2>
+
+    <label>Ad Soyad *</label>
+    <input type="text" id="fullName" required>
+
+    <label>Telefon *</label>
+    <input type="tel" id="phone" required>
+
+    <label>E-posta</label>
+    <input type="email" id="email">
+
+    <label>Araç Bilgisi *</label>
+    <input type="text" id="carInfo" placeholder="Örn: Fiat Egea - 34 ABC 123" required>
+
+    <label>Ehliyet Görseli *</label>
+    <input type="file" id="licenseFile" accept="image/*" required>
+
+    <button class="green" onclick="licenseCheck()">Sorgula</button>
+
+    <div id="checkStatus" class="status hidden"></div>
+
+  </div>
+
+  <div id="step2" class="hidden">
+
+    <h2>Sözleşme</h2>
+
+    <div class="contract">
+      <p>
+        İşbu araç kiralama sözleşmesi, müşteri tarafından beyan edilen bilgiler doğrultusunda hazırlanmıştır.
+      </p>
+
+      <p>
+        Müşteri, kiralanacak aracı teslim aldığı şekilde geri teslim etmeyi, trafik kurallarına uymayı,
+        oluşabilecek cezalar, hasarlar ve ek ücretlerden sorumlu olduğunu kabul eder.
+      </p>
+
+      <p>
+        Müşteri, ehliyet bilgilerinin kontrol edilmesi ve kiralama süreci için gerekli belgelerin işletme tarafından
+        incelenmesini kabul eder.
+      </p>
+
+      <p>
+        Bu sözleşme elektronik ortamda müşteri onayı ve imzası ile geçerli kabul edilir.
+      </p>
+    </div>
+
+    <label>İmza Alanı *</label>
+    <canvas id="signaturePad"></canvas>
+
+    <button class="red" onclick="clearSignature()">İmzayı Temizle</button>
+
+    <button class="green" onclick="uploadData()">Bilgileri Yükle</button>
+
+    <div id="uploadStatus" class="status hidden"></div>
+
+  </div>
+
+  <p class="small">
+    Not: Bu sistem demo kontrol akışı içerir. Gerçek resmi sorgulama entegrasyonu ayrıca yapılmalıdır.
+  </p>
+
+</div>
+
+<script>
+  const SUPABASE_URL = "https://ijxtrulwabiroriujwip.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_jt8EdUUUIyvgkTyXvGo12A_G8POvqN7";
+
+  const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let selectedLicenseFile = null;
+  let isSigned = false;
+
+  function value(id) {
+    return document.getElementById(id).value.trim();
+  }
+
+  function licenseCheck() {
+    const fileInput = document.getElementById("licenseFile");
+    selectedLicenseFile = fileInput.files[0];
+
+    if (!value("fullName") || !value("phone") || !value("carInfo") || !selectedLicenseFile) {
+      alert("Lütfen zorunlu alanları doldurun ve ehliyet görseli yükleyin.");
+      return;
+    }
+
+    const status = document.getElementById("checkStatus");
+    status.className = "status";
+    status.innerText = "Ehliyet belgeniz kontrol ediliyor...";
+
+    setTimeout(() => {
+      status.className = "status success";
+      status.innerText = "Ehliyetiniz onaylandı, işleme devam edebilirsiniz.";
+
+      setTimeout(() => {
+        document.getElementById("step1").classList.add("hidden");
+        document.getElementById("step2").classList.remove("hidden");
+        resizeCanvas();
+      }, 1200);
+
+    }, 2500);
+  }
+
+  const canvas = document.getElementById("signaturePad");
+  const ctx = canvas.getContext("2d");
+  let drawing = false;
+
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = 220;
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#111";
+  }
+
+  function getPosition(e) {
+    const rect = canvas.getBoundingClientRect();
+
+    if (e.touches && e.touches.length > 0) {
+      return {
+        x: e.touches[0].clientX - rect.left,
+        y: e.touches[0].clientY - rect.top
+      };
+    }
+
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+
+  function startDraw(e) {
+    e.preventDefault();
+    drawing = true;
+    isSigned = true;
+    const pos = getPosition(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  }
+
+  function draw(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    const pos = getPosition(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+  }
+
+  function endDraw(e) {
+    e.preventDefault();
+    drawing = false;
+  }
+
+  canvas.addEventListener("mousedown", startDraw);
+  canvas.addEventListener("mousemove", draw);
+  canvas.addEventListener("mouseup", endDraw);
+  canvas.addEventListener("mouseleave", endDraw);
+
+  canvas.addEventListener("touchstart", startDraw);
+  canvas.addEventListener("touchmove", draw);
+  canvas.addEventListener("touchend", endDraw);
+
+  function clearSignature() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    isSigned = false;
+  }
+
+  async function uploadData() {
+    if (!isSigned) {
+      alert("Lütfen imza atın.");
+      return;
+    }
+
+    const uploadStatus = document.getElementById("uploadStatus");
+    uploadStatus.className = "status";
+    uploadStatus.innerText = "Bilgiler yükleniyor...";
+
+    try {
+      const fileExt = selectedLicenseFile.name.split(".").pop();
+      const fileName = Date.now() + "-ehliyet." + fileExt;
+
+      const { error: uploadError } = await client.storage
+        .from("licenses")
+        .upload(fileName, selectedLicenseFile);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: publicData } = client.storage
+        .from("licenses")
+        .getPublicUrl(fileName);
+
+      const licenseUrl = publicData.publicUrl;
+
+      const signatureImage = canvas.toDataURL("image/png");
+
+      const { error: insertError } = await client
+        .from("rental_contracts")
+        .insert({
+          full_name: value("fullName"),
+          phone: value("phone"),
+          email: value("email"),
+          car_info: value("carInfo"),
+          license_image_url: licenseUrl,
+          signature_image: signatureImage,
+          status: "onaylandi"
+        });
+
+      if (insertError) {
+        throw insertError;
+      }
+
+      uploadStatus.className = "status success";
+      uploadStatus.innerText = "Bilgiler başarıyla yüklendi. İşleminiz tamamlandı.";
+
+    } catch (error) {
+      uploadStatus.className = "status";
+      uploadStatus.innerText = "Hata oluştu: " + error.message;
+    }
+  }
+
+  window.addEventListener("resize", resizeCanvas);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://ijxtrulwabiroriujwip.supabase.co";
+
+const SUPABASE_KEY = "sb_publishable_jt8EdUUUIyvgkTyXvGo12A_G8POvqN7";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+async function uploadData() {
+
+  const fullName = document.getElementById("fullName").value;
+  const phone = document.getElementById("phone").value;
+  const email = document.getElementById("email").value;
+  const carInfo = document.getElementById("carInfo").value;
+
+  const { data, error } = await supabaseClient
+    .from("rental_contracts")
+    .insert([
+      {
+        full_name: fullName,
+        phone: phone,
+        email: email,
+        car_info: carInfo
+      }
+    ]);
+
+  if(error){
+    alert("Hata oluştu");
+    console.log(error);
+  } else {
+    alert("Bilgiler başarıyla gönderildi");
+  }
+}
+</script>
+
+</body>
+</html>
