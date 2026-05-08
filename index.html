@@ -317,11 +317,6 @@ if (
   }
 
 async function uploadData() {
-  const contractElement = document.querySelector(".container");
-
-html2pdf()
-  .from(contractElement)
-  .save("sozlesme.pdf");
   if (!isSigned) {
     alert("Lütfen imza atın.");
     return;
@@ -336,6 +331,30 @@ html2pdf()
       alert("Ehliyet görseli bulunamadı. Lütfen tekrar yükleyin.");
       return;
     }
+
+    const contractElement = document.querySelector(".container");
+
+    const pdfBlob = await html2pdf()
+      .from(contractElement)
+      .outputPdf("blob");
+
+    const pdfFileName = Date.now() + "-sozlesme.pdf";
+
+    const { error: pdfUploadError } = await client.storage
+      .from("contracts")
+      .upload(pdfFileName, pdfBlob, {
+        contentType: "application/pdf"
+      });
+
+    if (pdfUploadError) {
+      throw pdfUploadError;
+    }
+
+    const { data: pdfPublicData } = client.storage
+      .from("contracts")
+      .getPublicUrl(pdfFileName);
+
+    const contractPdfUrl = pdfPublicData.publicUrl;
 
     const fileExt = selectedLicenseFile.name.split(".").pop();
     const fileName = Date.now() + "-ehliyet." + fileExt;
@@ -363,6 +382,7 @@ html2pdf()
           car_info: value("carInfo"),
           license_image_url: licenseUrl,
           signature_image: signatureImage,
+          contract_pdf_url: contractPdfUrl,
           status: "onaylandi"
         }
       ]);
@@ -372,7 +392,7 @@ html2pdf()
     }
 
     uploadStatus.className = "status success";
-    uploadStatus.innerText = "Bilgiler başarıyla yüklendi. İşleminiz tamamlandı.";
+    uploadStatus.innerText = "Bilgiler başarıyla yüklendi. Sözleşme PDF olarak kaydedildi.";
 
   } catch (error) {
     uploadStatus.className = "status";
