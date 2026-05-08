@@ -208,6 +208,32 @@
   return;
   }
 
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+if (!allowedTypes.includes(selectedLicenseFile.type)) {
+  alert("Lütfen sadece ehliyet fotoğrafı yükleyin. JPG, PNG veya WEBP formatı olmalıdır.");
+  return;
+}
+
+if (selectedLicenseFile.size < 50000) {
+  alert("Yüklenen görsel çok küçük görünüyor. Lütfen net bir ehliyet fotoğrafı yükleyin.");
+  return;
+}
+
+const fileName = selectedLicenseFile.name.toLowerCase();
+
+if (
+  !fileName.includes("ehliyet") &&
+  !fileName.includes("surucu") &&
+  !fileName.includes("sürücü") &&
+  !fileName.includes("license")
+) {
+  const devam = confirm("Yüklediğiniz dosya ehliyet gibi görünmüyor. Yine de devam etmek istiyor musunuz?");
+  if (!devam) {
+    return;
+  }
+}
+
     const status = document.getElementById("checkStatus");
     status.className = "status";
     status.innerText = "Ehliyet belgeniz kontrol ediliyor...";
