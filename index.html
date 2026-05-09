@@ -118,6 +118,12 @@
 
     <h2>Ehliyet Yükleme</h2>
 
+    <label>Ad Soyad *</label>
+    <input type="text" id="customerName" placeholder="Ad Soyad" required>
+
+    <label>Telefon Numarası *</label>
+    <input type="tel" id="customerPhone" placeholder="05xx xxx xx xx" required>
+
     <label>Araç Bilgisi *</label>
     <input type="text" id="carInfo" placeholder="Örn: Fiat Egea - 34 ABC 123" required>
 
@@ -141,28 +147,11 @@
       </p>
 
       <p>
-        <strong>2-</strong> Kiralanan aracin her ne şekilde ve şartta olursa olsun kiraya verilmesi, bedelsiz dahi olsa üçüncü şahislara kullandirilmasi yasaktir. Ayrica aracin:
-        <br><br>
-        <strong>a</strong> Ek sürücü olarak belirtilmeyen kişiler tarafindan kullanilmasi,<br>
-        <strong>b</strong> Herhangi bir araci çekmek veya itmek amaciyla kullanilmasi,<br>
-        <strong>c</strong> Gelir karşiliği yolcu veya yük taşimaciliğinda kullanilmasi,<br>
-        <strong>d</strong> Türkiye Cumhuriyeti sinirlari dişinda kullanilmasi yasaktir.
+        <strong>2-</strong> Kiralanan aracin her ne şekilde ve şartta olursa olsun kiraya verilmesi, bedelsiz dahi olsa üçüncü şahislara kullandirilmasi yasaktir.
       </p>
 
       <p>
         <strong>3-</strong> Araç sürücüsünün alkol, uyuşturucu veya uyku verici ilaç etkisi altinda olmamasi şartiyla, aracin zarar görmesi durumunda oluşabilecek hasar sorumluluğunu itiraz etmeksizin kabul eder.
-        <br><br>
-        <strong>a</strong> Kasko ve sigorta poliçesi ücretleri (50.000 TL), olay anindan itibaren 15 dakika içerisinde tahsil edilecektir. Sözleşme imzalandiktan sonra iptal edilmesi durumunda cayma bedeli uygulanir. Araç kasko bedelinin %25'i teminat bedeli olarak talep edilebilir.
-        <br><br>
-        <strong>b</strong> Kaza aninda alkol, uyuşturucu veya uyku verici ilaç etkisi altinda olunmasi, yasal hiz sinirlarinin aşilmasi veya aracin zarar görmesi durumunda oluşacak tüm masraflar kiraciya aittir.
-        <br><br>
-        <strong>c</strong> Sözleşmenin kurulmasindan sonra kiracinin herhangi bir nedenle araç kullanma yetkisini kaybetmesi (ehliyete el konulmasi vb.) durumunda, aracin konum bilgisini paylaşarak vale görevlisine teslim etmesi gerekmektedir.
-        <br><br>
-        <strong>d</strong> Araçla alkollü veya uyuşturucu etkisi altinda kaza yapilmasi durumunda araç masraflari ile birlikte minimum 120.000 TL değer kaybi bedeli kiraciya aittir.
-        <br><br>
-        <strong>e</strong> Kiraci ve sözleşmede ek sürücü olarak belirtilen kişiler haricindeki şahislarin araci kullanmasi sonucu meydana gelen hasar ve/veya kazalarda; aracin çalinmasi veya zarar görmesi durumunda sigorta ve kasko firmalarinin ödeme yapip yapmamasindan doğacak tüm sorumluluk kiraciya aittir.
-        <br><br>
-        <strong>f</strong> Kiraci, işbu araç kiralama sözleşmesini imzaladiktan sonra aracin teslim tarihinden önce veya sonra herhangi bir gerekçe göstermeksizin sözleşmeden tek tarafli olarak caymasi halinde, 10.000 TL tutarinda cezai şart bedelini ayrica ihtara gerek olmaksizin kiralayana ödemeyi kabul, beyan ve taahhüt eder.
       </p>
 
       <p>
@@ -201,17 +190,17 @@ let selectedLicenseFile = null;
 let isSigned = false;
 
 const contractTexts = [
-  "1- Araçlarda HGS (Hizli Geçiş Sistemi) bulunmaktadir. Kiraci, kira süresi boyunca yaptiği geçiş ücretlerinin online olarak kontrol edilerek araç teslimi sirasinda provizyon ücretinden düşülmesini kabul eder.",
-  "2- Kiralanan aracin her ne şekilde ve şartta olursa olsun kiraya verilmesi, bedelsiz dahi olsa üçüncü şahislara kullandirilmasi yasaktir. Ayrica aracin: a) Ek sürücü olarak belirtilmeyen kişiler tarafindan kullanilmasi, b) Herhangi bir araci çekmek veya itmek amaciyla kullanilmasi, c) Gelir karşiliği yolcu veya yük taşimaciliğinda kullanilmasi, d) Türkiye Cumhuriyeti sinirlari dişinda kullanilmasi yasaktir.",
-  "3- Araç sürücüsünün alkol, uyuşturucu veya uyku verici ilaç etkisi altinda olmamasi şartiyla, aracin zarar görmesi durumunda oluşabilecek hasar sorumluluğunu itiraz etmeksizin kabul eder.",
-  "3/a- Kasko ve sigorta poliçesi ücretleri (50.000 TL), olay anindan itibaren 15 dakika içerisinde tahsil edilecektir. Sözleşme imzalandiktan sonra iptal edilmesi durumunda cayma bedeli uygulanir. Araç kasko bedelinin %25'i teminat bedeli olarak talep edilebilir.",
-  "3/b- Kaza aninda alkol, uyuşturucu veya uyku verici ilaç etkisi altinda olunmasi, yasal hiz sinirlarinin aşilmasi veya aracin zarar görmesi durumunda oluşacak tüm masraflar kiraciya aittir.",
-  "3/c- Sözleşmenin kurulmasindan sonra kiracinin herhangi bir nedenle araç kullanma yetkisini kaybetmesi (ehliyete el konulmasi vb.) durumunda, aracin konum bilgisini paylaşarak vale görevlisine teslim etmesi gerekmektedir.",
-  "3/d- Araçla alkollü veya uyuşturucu etkisi altinda kaza yapilmasi durumunda araç masraflari ile birlikte minimum 120.000 TL değer kaybi bedeli kiraciya aittir.",
-  "3/e- Kiraci ve sözleşmede ek sürücü olarak belirtilen kişiler haricindeki şahislarin araci kullanmasi sonucu meydana gelen hasar ve/veya kazalarda; aracin çalinmasi veya zarar görmesi durumunda sigorta ve kasko firmalarinin ödeme yapip yapmamasindan doğacak tüm sorumluluk kiraciya aittir.",
-  "3/f- Kiraci, işbu araç kiralama sözleşmesini imzaladiktan sonra aracin teslim tarihinden önce veya sonra herhangi bir gerekçe göstermeksizin sözleşmeden tek tarafli olarak caymasi halinde, 10.000 TL tutarnda cezai şart bedelini ayrica ihtara gerek olmaksizin kiralayana ödemeyi kabul, beyan ve taahhüt eder.",
-  "4- Kiracinin kiralanan araç ile kariştiği herhangi bir kazada; kiracinin alkol, uyuşturucu etkisi altinda olmasi veya olay yerini terk etmesi durumunda oluşacak doğrudan ve dolayli tüm zararlar kiracidan talep edilecektir.",
-  "NOT: Görüşmelerimiz kayit altina alinmaktadir. Sözleşmenin WhatsApp üzerinden gönderilmesi gerekmektedir. Sözleşme muhasebe departmanimiz tarafindan iletilecektir."
+  "1- Araclarda HGS bulunmaktadir. Kiraci, kira suresi boyunca yaptigi gecis ucretlerinin online olarak kontrol edilerek arac teslimi sirasinda provizyon ucretinden dusulmesini kabul eder.",
+  "2- Kiralanan aracin her ne sekilde ve sartta olursa olsun kiraya verilmesi, bedelsiz dahi olsa ucuncu sahislara kullandirilmasi yasaktir.",
+  "3- Arac surucusunun alkol, uyusturucu veya uyku verici ilac etkisi altinda olmamasi sartiyla, aracin zarar gormesi durumunda olusabilecek hasar sorumlulugunu kabul eder.",
+  "3/a- Kasko ve sigorta policesi ucretleri 50.000 TL olup, olay anindan itibaren 15 dakika icerisinde tahsil edilecektir.",
+  "3/b- Kaza aninda alkol, uyusturucu veya uyku verici ilac etkisi altinda olunmasi, yasal hiz sinirlarinin asilmasi veya aracin zarar gormesi durumunda olusacak tum masraflar kiraciya aittir.",
+  "3/c- Sozlesmenin kurulmasindan sonra kiracinin herhangi bir nedenle arac kullanma yetkisini kaybetmesi durumunda, aracin konum bilgisini paylasarak vale gorevlisine teslim etmesi gerekmektedir.",
+  "3/d- Aracla alkollu veya uyusturucu etkisi altinda kaza yapilmasi durumunda arac masraflari ile birlikte minimum 120.000 TL deger kaybi bedeli kiraciya aittir.",
+  "3/e- Kiraci ve sozlesmede ek surucu olarak belirtilen kisiler haricindeki sahislarin araci kullanmasi sonucu meydana gelen hasar ve/veya kazalarda tum sorumluluk kiraciya aittir.",
+  "3/f- Kiraci, sozlesmeyi imzaladiktan sonra aracin teslim tarihinden once veya sonra herhangi bir gerekce gostermeksizin sozlesmeden cayarsa 10.000 TL cezai sart bedelini odemeyi kabul eder.",
+  "4- Kiracinin kiralanan arac ile karistigi herhangi bir kazada; kiracinin alkol, uyusturucu etkisi altinda olmasi veya olay yerini terk etmesi durumunda olusacak dogrudan ve dolayli tum zararlar kiracidan talep edilecektir.",
+  "NOT: Gorusmelerimiz kayit altina alinmaktadir. Sozlesmenin WhatsApp uzerinden gonderilmesi gerekmektedir. Sozlesme muhasebe departmanimiz tarafindan iletilecektir."
 ];
 
 function value(id) {
@@ -225,8 +214,8 @@ function licenseCheck() {
 
   selectedLicenseFile = fileInput.files[0];
 
-  if (!value("carInfo") || !selectedLicenseFile) {
-    alert("Lütfen araç bilgisi girin ve ehliyet görseli yükleyin.");
+  if (!value("customerName") || !value("customerPhone") || !value("carInfo") || !selectedLicenseFile) {
+    alert("Lütfen ad soyad, telefon, araç bilgisi girin ve ehliyet görseli yükleyin.");
     return;
   }
 
@@ -293,7 +282,6 @@ canvas.addEventListener("mousedown", startDraw);
 canvas.addEventListener("mousemove", draw);
 canvas.addEventListener("mouseup", endDraw);
 canvas.addEventListener("mouseleave", endDraw);
-
 canvas.addEventListener("touchstart", startDraw);
 canvas.addEventListener("touchmove", draw);
 canvas.addEventListener("touchend", endDraw);
@@ -320,8 +308,15 @@ async function uploadData() {
       return;
     }
 
+    const customerName = value("customerName");
+    const customerPhone = value("customerPhone");
     const carInfo = value("carInfo");
     const signatureImage = canvas.toDataURL("image/png");
+
+    if (!customerName || !customerPhone || !carInfo) {
+      uploadStatus.innerText = "Lütfen ad soyad, telefon ve araç bilgisini girin.";
+      return;
+    }
 
     if (!selectedLicenseFile) {
       uploadStatus.innerText = "Ehliyet görseli bulunamadı.";
@@ -346,22 +341,23 @@ async function uploadData() {
     const { jsPDF } = window.jspdf;
 
     const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-   format: "a4"
-   });
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4"
+    });
 
-   doc.setFont("courier", "bold");
-   doc.setFontSize(16);
-   doc.text("ONLINE ARAC KIRA SOZLESMESI", 105, 18, {
-   align: "center"
-   });
+    doc.setFont("courier", "bold");
+    doc.setFontSize(16);
+    doc.text("ONLINE ARAC KIRA SOZLESMESI", 105, 18, { align: "center" });
 
-   doc.setFont("courier", "normal");
-   doc.setFontSize(10);
+    doc.setFont("courier", "normal");
+    doc.setFontSize(10);
 
     let y = 30;
-    y = addPdfText(doc, "Arac Bilgisi: " + carInfo, 15, y, 180, 5);
+
+    y = addPdfText(doc, "Ad Soyad: " + customerName, 15, y, 180, 5);
+    y = addPdfText(doc, "Telefon: " + customerPhone, 15, y + 2, 180, 5);
+    y = addPdfText(doc, "Arac Bilgisi: " + carInfo, 15, y + 2, 180, 5);
     y = addPdfText(doc, "Tarih: " + new Date().toLocaleString("tr-TR"), 15, y + 2, 180, 5);
 
     y += 5;
@@ -372,21 +368,7 @@ async function uploadData() {
         y = 20;
       }
 
-      const temizMadde = madde
-.replace(/ı/g, "i")
-.replace(/İ/g, "I")
-.replace(/ş/g, "s")
-.replace(/Ş/g, "S")
-.replace(/ğ/g, "g")
-.replace(/Ğ/g, "G")
-.replace(/ü/g, "u")
-.replace(/Ü/g, "U")
-.replace(/ö/g, "o")
-.replace(/Ö/g, "O")
-.replace(/ç/g, "c")
-.replace(/Ç/g, "C");
-
-y = addPdfText(doc, temizMadde, 15, y, 180, 5);
+      y = addPdfText(doc, madde, 15, y, 180, 5);
       y += 3;
     });
 
@@ -395,13 +377,11 @@ y = addPdfText(doc, temizMadde, 15, y, 180, 5);
       y = 20;
     }
 
-    doc.setFont("helvetica", "bold");
+    doc.setFont("courier", "bold");
     doc.text("Kiraci Imzasi", 15, y + 10);
-
     doc.addImage(signatureImage, "PNG", 15, y + 15, 70, 35);
 
     const pdfBlob = doc.output("blob");
-
     const pdfFileName = Date.now() + "-sozlesme.pdf";
 
     const { error: pdfUploadError } = await client.storage
@@ -422,6 +402,8 @@ y = addPdfText(doc, temizMadde, 15, y, 180, 5);
       .from("rental_contracts")
       .insert([
         {
+          customer_name: customerName,
+          customer_phone: customerPhone,
           car_info: carInfo,
           license_image_url: licenseUrl,
           signature_image: signatureImage,
