@@ -51,26 +51,46 @@
   </div>
 
   <div id="step2" class="hidden">
-    <h2>Sözleşme</h2>
+    <h2>Araç Kiralama Sözleşme Poliçesi</h2>
 
     <div class="contract">
-      <p><strong>1-</strong> Araçlarda HGS bulunmaktadir. Kiraci, kira süresi boyunca yaptiği geçiş ücretlerinin provizyon ücretinden düşülmesini kabul eder.</p>
-      <p><strong>2-</strong> Kiralanan aracin üçüncü şahislara kullandirilmasi yasaktir.</p>
-      <p><strong>3-</strong> Araçta oluşabilecek trafik cezalari, hasarlar ve ek ücretlerden kiraci sorumludur.</p>
-      <p><strong>4-</strong> Kiraci, araci teslim aldiği şekilde geri teslim edeceğini kabul eder.</p>
-      <p><strong>NOT:</strong> Görüşmelerimiz kayit altina alinmaktadir. Sözleşme muhasebe departmanimiz tarafindan iletilecektir.</p>
+      <p><strong>1-</strong> Araçlarda HGS (Hızlı Geçiş Sistemi) bulunmaktadır. Kiracı, kira dönüşünde yaptığı geçiş bedelinin online olarak kontrol edilip araç tesliminde anlık provizyon ücretinden düşülmesini kabul eder.</p>
+
+      <p><strong>2-</strong> Kiralanan aracın her ne şekilde ve şartta olursa olsun kiraya verilmesi, bedelsiz dahi olsa üçüncü şahıslara kullandırılması yasaktır. Ayrıca aracın:</p>
+      <p><strong>a)</strong> Ek sürücü olarak belirtilmeyen sürücü tarafından kullanılması yasaktır.</p>
+      <p><strong>b)</strong> Herhangi bir vasıtayı çekmek veya itmek amacıyla kullanılması yasaktır.</p>
+      <p><strong>c)</strong> Gelir karşılığı yolcu veya mal taşımasında kullanılması yasaktır.</p>
+      <p><strong>d)</strong> Türkiye Cumhuriyeti sınırları dışında kullanılması yasaktır.</p>
+
+      <p><strong>3-</strong> Araç sürücüsünün alkol, uyuşturucu veya uyku verici ilaç etkisinde olmaması şartıyla, aracın zarar görmesi durumunda hasar sorumluluğunu itiraz etmeksizin karşılamayı firmamız kabul eder.</p>
+
+      <p><strong>a)</strong> Kasko ve sigorta poliçesi ücretleri (50.000 TL), 15 dakika içerisinde tahsil edilecektir. Sözleşme imzalandıktan sonra iptal edilirse cayma bedeli uygulanır. Araç kasko bedelinin %25'i teminat bedeli olarak talep edilebilir.</p>
+
+      <p><strong>b)</strong> Kaza anında alkol, uyuşturucu veya uyku verici ilaç etkisi altında olunması, yasal hız sınırlarının aşılması veya aracın zarar görmesi durumunda oluşacak tüm masraflar kiracıya aittir.</p>
+
+      <p><strong>c)</strong> Sözleşmenin kurulmasından sonra kiracı herhangi bir nedenle araç kullanma yetkisini kaybederse, örneğin ehliyete el konulması durumunda, aracın konum bilgisini paylaşarak vale görevlimize teslim etmesi gerekir.</p>
+
+      <p><strong>d)</strong> Araçla alkollü veya uyuşturucu etkisi altında kaza yapılması durumunda araç masrafı ve minimum 120.000 TL pert/değer kaybı bedeli kiracıya aittir.</p>
+
+      <p><strong>e)</strong> Kiracı ve kira sözleşmesinde ek sürücü olarak belirtilen kişilerin haricindeki şahısların aracı kullanması sonucu meydana gelen hasar ve/veya kazalarda; aracın çalınması veya zarar görmesi durumunda sigorta ve kasko firmalarının ödeme yapıp yapmamasından doğacak tüm sorumluluk kiracıya aittir.</p>
+
+      <p><strong>f)</strong> Kiracı, işbu araç kiralama sözleşmesini imzaladıktan sonra aracın teslim tarihinden önce veya sonra herhangi bir gerekçe göstermeksizin sözleşmeden tek taraflı olarak cayması halinde, 10.000 TL tutarında cezai şart bedelini ayrıca ihtara gerek olmaksızın kiralayana ödemeyi kabul, beyan ve taahhüt eder.</p>
+
+      <p><strong>4-</strong> Kiracının kiralanan araç ile karıştığı herhangi bir kazada; kiracının alkol veya uyuşturucu etkisi altında olması ya da olay yerini terk etmesi durumunda oluşacak doğrudan ve dolaylı tüm zararlar kiracıdan talep edilecektir.</p>
+
+      <p><strong>NOT:</strong> Görüşmelerimiz kayıt altına alınmaktadır. Sözleşmenin WhatsApp üzerinden gönderilmesi gerekmektedir. Sözleşme muhasebe departmanımız tarafından iletilecektir.</p>
     </div>
 
-    <label>İmza Alani *</label>
+    <label>İmza Alanı *</label>
     <canvas id="signaturePad"></canvas>
 
-    <button type="button" class="red" onclick="clearSignature()">İmzayi Temizle</button>
+    <button type="button" class="red" onclick="clearSignature()">İmzayı Temizle</button>
     <button type="button" class="green" onclick="uploadData()">Bilgileri Yükle</button>
 
     <div id="uploadStatus" class="status hidden"></div>
   </div>
 
-  <p class="small">Not: Bu sistem'de ehliyetiniz KABİS üzerinde sorgulaniyor.</p>
+  <p class="small">Not: Bu sistemde ehliyetiniz KABİS üzerinde sorgulanıyor.</p>
 </div>
 
 <script>
@@ -83,10 +103,21 @@ let isSigned = false;
 let drawing = false;
 
 const contractTexts = [
-  "1- Araclarda HGS bulunmaktadir. Kiraci, kira suresi boyunca yaptigi gecis ucretlerinin online olarak kontrol edilerek arac teslimi sirasinda provizyon ucretinden dusulmesini kabul eder.",
+  "ARAC KIRALAMA SOZLESME POLICESI",
+  "1- Araclarda HGS bulunmaktadir. Kiraci, kira donusunde yaptigi gecis bedelinin online olarak kontrol edilip arac tesliminde anlik provizyon ucretinden dusulmesini kabul eder.",
   "2- Kiralanan aracin her ne sekilde ve sartta olursa olsun kiraya verilmesi, bedelsiz dahi olsa ucuncu sahislara kullandirilmasi yasaktir.",
-  "3- Arac surucusunun alkol, uyusturucu veya uyku verici ilac etkisi altinda olmamasi sartiyla, aracin zarar gormesi durumunda olusabilecek hasar sorumlulugunu kabul eder.",
-  "4- Kiracinin kiralanan arac ile karistigi herhangi bir kazada; kiracinin alkol, uyusturucu etkisi altinda olmasi veya olay yerini terk etmesi durumunda olusacak tum zararlar kiracidan talep edilecektir.",
+  "2/a- Ek surucu olarak belirtilmeyen surucu tarafindan aracin kullanilmasi yasaktir.",
+  "2/b- Herhangi bir vasitayi cekmek veya itmek amaciyla kullanilmasi yasaktir.",
+  "2/c- Gelir karsiligi yolcu veya mal tasimasinda kullanilmasi yasaktir.",
+  "2/d- Turkiye Cumhuriyeti sinirlari disinda kullanilmasi yasaktir.",
+  "3- Arac surucusunun alkol, uyusturucu veya uyku verici ilac etkisinde olmamasi sartiyla, aracin zarar gormesi durumunda hasar sorumlulugunu itiraz etmeksizin karsilamayi firmamiz kabul eder.",
+  "3/a- Kasko ve sigorta policesi ucretleri 50.000 TL olup 15 dakika icerisinde tahsil edilecektir. Sozlesme imzalandiktan sonra iptal edilirse cayma bedeli uygulanir. Arac kasko bedelinin yuzde 25'i teminat bedeli olarak talep edilebilir.",
+  "3/b- Kaza aninda alkol, uyusturucu veya uyku verici ilac etkisi altinda olunmasi, yasal hiz sinirlarinin asilmasi veya aracin zarar gormesi durumunda olusacak tum masraflar kiraciya aittir.",
+  "3/c- Sozlesmenin kurulmasindan sonra kiraci herhangi bir nedenle arac kullanma yetkisini kaybederse, ornegin ehliyete el konulmasi durumunda, aracin konum bilgisini paylasarak vale gorevlimize teslim etmesi gerekir.",
+  "3/d- Aracla alkollu veya uyusturucu etkisi altinda kaza yapilmasi durumunda arac masrafi ve minimum 120.000 TL pert/deger kaybi bedeli kiraciya aittir.",
+  "3/e- Kiraci ve kira sozlesmesinde ek surucu olarak belirtilen kisilerin haricindeki sahislarin araci kullanmasi sonucu meydana gelen hasar ve/veya kazalarda, aracin calinmasi veya zarar gormesi durumunda sigorta ve kasko firmalarinin odeme yapip yapmamasindan dogacak tum sorumluluk kiraciya aittir.",
+  "3/f- Kiraci, isbu arac kiralama sozlesmesini imzaladiktan sonra aracin teslim tarihinden once veya sonra herhangi bir gerekce gostermeksizin sozlesmeden tek tarafli olarak caymasi halinde, 10.000 TL tutarinda cezai sart bedelini ayrica ihtara gerek olmaksizin kiralayana odemeyi kabul, beyan ve taahhut eder.",
+  "4- Kiracinin kiralanan arac ile karistigi herhangi bir kazada; kiracinin alkol veya uyusturucu etkisi altinda olmasi ya da olay yerini terk etmesi durumunda olusacak dogrudan ve dolayli tum zararlar kiracidan talep edilecektir.",
   "NOT: Gorusmelerimiz kayit altina alinmaktadir. Sozlesmenin WhatsApp uzerinden gonderilmesi gerekmektedir. Sozlesme muhasebe departmanimiz tarafindan iletilecektir."
 ];
 
@@ -255,12 +286,22 @@ async function uploadData() {
     y = addPdfText(doc, "Tarih: " + new Date().toLocaleString("tr-TR"), 15, y + 2, 180, 5);
     y += 5;
 
-    contractTexts.forEach((madde) => {
+    contractTexts.forEach((madde, index) => {
       if (y > 260) {
         doc.addPage();
         y = 20;
       }
-      y = addPdfText(doc, madde, 15, y, 180, 5);
+
+      if (index === 0) {
+        doc.setFont("courier", "bold");
+        doc.setFontSize(12);
+        y = addPdfText(doc, madde, 15, y, 180, 6);
+        doc.setFont("courier", "normal");
+        doc.setFontSize(10);
+      } else {
+        y = addPdfText(doc, madde, 15, y, 180, 5);
+      }
+
       y += 3;
     });
 
