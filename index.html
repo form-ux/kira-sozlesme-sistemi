@@ -344,15 +344,21 @@ async function uploadData() {
     const licenseUrl = licensePublicData.publicUrl;
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF("p", "mm", "a4");
 
-    doc.setFont("times", "bold");
-    doc.setFontSize(16);
-    doc.text("ONLINE ARAC KIRA SOZLESMESI", 105, 18, { align: "center" });
+    const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+   format: "a4"
+   });
 
-    doc.setFont("times", "normal");
-    doc.setFontSize(9);
-    doc.setCharSpace(0);
+   doc.setFont("courier", "bold");
+   doc.setFontSize(16);
+   doc.text("ONLINE ARAC KIRA SOZLESMESI", 105, 18, {
+   align: "center"
+   });
+
+   doc.setFont("courier", "normal");
+   doc.setFontSize(10);
 
     let y = 30;
     y = addPdfText(doc, "Arac Bilgisi: " + carInfo, 15, y, 180, 5);
@@ -366,7 +372,21 @@ async function uploadData() {
         y = 20;
       }
 
-      y = addPdfText(doc, madde, 15, y, 180, 5);
+      const temizMadde = madde
+.replace(/ı/g, "i")
+.replace(/İ/g, "I")
+.replace(/ş/g, "s")
+.replace(/Ş/g, "S")
+.replace(/ğ/g, "g")
+.replace(/Ğ/g, "G")
+.replace(/ü/g, "u")
+.replace(/Ü/g, "U")
+.replace(/ö/g, "o")
+.replace(/Ö/g, "O")
+.replace(/ç/g, "c")
+.replace(/Ç/g, "C");
+
+y = addPdfText(doc, temizMadde, 15, y, 180, 5);
       y += 3;
     });
 
