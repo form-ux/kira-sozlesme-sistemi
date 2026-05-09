@@ -324,7 +324,14 @@ async function uploadData() {
     }
 
     const fileExt = selectedLicenseFile.name.split(".").pop();
-    const licenseFileName = Date.now() + "-ehliyet." + fileExt;
+    const licenseFileName =
+  cleanName +
+  "-" +
+  cleanPhone +
+  "-" +
+  Date.now() +
+  "-ehliyet." +
+  fileExt;
 
     const { error: licenseUploadError } = await client.storage
       .from("licenses")
@@ -382,7 +389,21 @@ async function uploadData() {
     doc.addImage(signatureImage, "PNG", 15, y + 15, 70, 35);
 
     const pdfBlob = doc.output("blob");
-    const pdfFileName = Date.now() + "-sozlesme.pdf";
+    const cleanName = customerName
+  .toLowerCase()
+  .replaceAll(" ", "-")
+  .replace(/[^a-z0-9-]/g, "");
+
+const cleanPhone = customerPhone
+  .replace(/[^0-9]/g, "");
+
+const pdfFileName =
+  cleanName +
+  "-" +
+  cleanPhone +
+  "-" +
+  Date.now() +
+  "-sozlesme.pdf";
 
     const { error: pdfUploadError } = await client.storage
       .from("contracts")
