@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - Başvurular</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f4f4f5;color:#111}
+header{background:#111;color:white;padding:20px;text-align:center}
+.container{max-width:1200px;margin:25px auto;padding:15px}
+.login-box{max-width:400px;margin:80px auto;background:white;padding:25px;border-radius:18px;box-shadow:0 10px 25px rgba(0,0,0,.1)}
+input{width:100%;padding:14px;border:1px solid #ddd;border-radius:12px;font-size:16px;margin-top:10px;box-sizing:border-box}
+button{padding:12px 16px;border:0;border-radius:10px;cursor:pointer;font-weight:bold}
+.login-btn{width:100%;background:#16a34a;color:white;margin-top:15px}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.refresh-btn{background:#2563eb;color:white}
+.card{background:white;border-radius:18px;padding:18px;margin-bottom:18px;box-shadow:0 8px 20px rgba(0,0,0,.08)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.item{background:#f9fafb;padding:12px;border-radius:12px}
+.item strong{display:block;font-size:13px;color:#555;margin-bottom:5px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}
+.link-btn{background:#111;color:white;text-decoration:none;padding:11px 14px;border-radius:10px;font-weight:bold;display:inline-block}
+.whatsapp{background:#16a34a}
+.pdf{background:#7c3aed}
+.img{background:#ea580c}
+.status{background:#e5e7eb;padding:6px 10px;border-radius:8px;display:inline-block}
+.empty{text-align:center;padding:40px;color:#777;background:white;border-radius:15px}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Admin Panel</h1>
+  <p>Gelen Başvurular</p>
+</header>
+
+<div id="loginArea" class="login-box">
+  <h2>Admin Girişi</h2>
+  <p>Panele giriş yapmak için şifre gir.</p>
+  <input type="password" id="adminPass" placeholder="Admin Şifresi">
+  <button class="login-btn" onclick="login()">Giriş Yap</button>
+</div>
+
+<div id="adminArea" class="container" style="display:none;">
+  <div class="top-bar">
+    <h2>Başvurular</h2>
+    <button class="refresh-btn" onclick="loadData()">Yenile</button>
+  </div>
+  <div id="listArea"></div>
+</div>
+
+<script>
+const ADMIN_PASSWORD = "123456";
+
+const SUPABASE_URL = "https://ijxtrulwabiroriujwip.supabase.co";
+const SUPABASE_KEY = "sb_publishable_jt8EdUUUIyvgkTyXvGo12A_G8POvqN7";
+
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function login(){
+  const pass = document.getElementById("adminPass").value;
+  if(pass === ADMIN_PASSWORD){
+    document.getElementById("loginArea").style.display = "none";
+    document.getElementById("adminArea").style.display = "block";
+    loadData();
+  }else{
+    alert("Şifre hatalı.");
+  }
+}
+
+function safe(value){
+  return value ? value : "-";
+}
+
+async function loadData(){
+  const listArea = document.getElementById("listArea");
+  listArea.innerHTML = "<div class='empty'>Yükleniyor...</div>";
+
+  const { data, error } = await client
+    .from("insurance_forms")
+    .select("*")
+    .order("created_at", { ascending:false });
+
+  if(error){
+    listArea.innerHTML = "<div class='empty'>Hata oluştu: " + error.message + "</div>";
+    return;
+  }
+
+  if(!data || data.length === 0){
+    listArea.innerHTML = "<div class='empty'>Henüz kayıt yok.</div>";
+    return;
+  }
+
+  listArea.innerHTML = "";
+
+  data.forEach(item => {
+    const name = item.customer_name || item.full_name || "-";
+    const phone = item.customer_phone || "-";
+    const car = item.car_info || item.car_model || "-";
+    const packageName = item.package_name || "-";
+    const packagePrice = item.package_price || "-";
+    const packageLimit = item.package_limit || "-";
+    const contractPdf = item.contract_pdf_url || "";
+    const policyPdf = item.policy_pdf_url || "";
+    const licenseImage = item.license_image_url || "";
+    const signatureImage = item.signature_image || "";
+    const status = item.status || "beklemede";
+
+    let whatsappLink = "";
+    if(phone){
+      let cleanPhone = phone.replace(/\D/g,"");
+      if(cleanPhone.startsWith("0")) cleanPhone = "9" + cleanPhone;
+      if(!cleanPhone.startsWith("90")) cleanPhone = "90" + cleanPhone;
+      whatsappLink = "https://wa.me/" + cleanPhone;
+    }
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <div class="grid">
+        <div class="item"><strong>Ad Soyad</strong>${safe(name)}</div>
+        <div class="item"><strong>Telefon</strong>${safe(phone)}</div>
+        <div class="item"><strong>Araç Bilgisi</strong>${safe(car)}</div>
+        <div class="item"><strong>Paket</strong>${safe(packageName)}</div>
+        <div class="item"><strong>Paket Fiyatı</strong>${safe(packagePrice)}</div>
+        <div class="item"><strong>Teminat Limiti</strong>${safe(packageLimit)}</div>
+        <div class="item"><strong>Durum</strong><span class="status">${safe(status)}</span></div>
+        <div class="item"><strong>Tarih</strong>${item.created_at ? new Date(item.created_at).toLocaleString("tr-TR") : "-"}</div>
+      </div>
+
+      <div class="actions">
+        ${licenseImage ? `<a class="link-btn img" href="${licenseImage}" target="_blank">Ehliyet Gör</a>` : ""}
+        ${signatureImage ? `<a class="link-btn img" href="${signatureImage}" target="_blank">İmza Gör</a>` : ""}
+        ${contractPdf ? `<a class="link-btn pdf" href="${contractPdf}" target="_blank">Sözleşme PDF</a>` : ""}
+        ${policyPdf ? `<a class="link-btn pdf" href="${policyPdf}" target="_blank">Kasko PDF</a>` : ""}
+        ${whatsappLink ? `<a class="link-btn whatsapp" href="${whatsappLink}" target="_blank">WhatsApp</a>` : ""}
+      </div>
+    `;
+
+    listArea.appendChild(card);
+  });
+}
+</script>
+
+</body>
+</html>
