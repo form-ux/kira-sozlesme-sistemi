@@ -330,7 +330,7 @@ async function uploadData() {
     const contractPdfUrl = pdfPublicData.publicUrl;
 
     const { error: insertError } = await client
-      .from("rental_contracts")
+      .from("insurance_forms")
       .insert([
         {
           customer_name: customerName,
